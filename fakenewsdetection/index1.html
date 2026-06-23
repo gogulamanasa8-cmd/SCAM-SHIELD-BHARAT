@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scam Shield Bharat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #060b14;
+            --bg-card: #0d1424;
+            --bg-card-alt: #111b2e;
+            --fg: #e2e8f0;
+            --fg-muted: #5a6a85;
+            --accent: #00ff88;
+            --accent-dim: #00cc6a;
+            --accent-glow: rgba(0,255,136,0.15);
+            --warning: #ffb800;
+            --warning-glow: rgba(255,184,0,0.15);
+            --danger: #ff4757;
+            --danger-glow: rgba(255,71,87,0.15);
+            --border: #1a2540;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        h1,h2,h3,h4,h5,h6,.font-display { font-family: 'Rajdhani', sans-serif; }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        /* 背景网格 */
+        .bg-grid {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        .bg-glow-1 {
+            position: fixed; top: -200px; right: -200px; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(0,255,136,0.06) 0%, transparent 70%);
+            z-index: 0; pointer-events: none;
+        }
+        .bg-glow-2 {
+            position: fixed; bottom: -300px; left: -200px; width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(255,71,87,0.04) 0%, transparent 70%);
+            z-index: 0; pointer-events: none;
+        }
+
+        /* 盾牌动画 */
+        .shield-container {
+            position: relative; width: 180px; height: 180px; margin: 0 auto;
+        }
+        .shield-icon {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-size: 72px; color: var(--accent); z-index: 3;
+            animation: shieldPulse 3s ease-in-out infinite;
+        }
+        .shield-ring {
+            position: absolute; border-radius: 50%; border: 2px solid transparent;
+        }
+        .shield-ring-1 {
+            inset: 0; border-top-color: var(--accent); border-right-color: var(--accent);
+            animation: ringRotate 4s linear infinite;
+        }
+        .shield-ring-2 {
+            inset: 15px; border-bottom-color: var(--accent-dim); border-left-color: var(--accent-dim);
+            animation: ringRotate 6s linear infinite reverse;
+        }
+        .shield-ring-3 {
+            inset: 30px; border-top-color: rgba(0,255,136,0.3); border-right-color: rgba(0,255,136,0.3);
+            animation: ringRotate 8s linear infinite;
+        }
+        .shield-glow {
+            position: absolute; inset: 20px; border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            animation: shieldPulse 3s ease-in-out infinite;
+        }
+        @keyframes shieldPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        @keyframes ringRotate { to { transform: rotate(360deg); } }
+
+        /* 扫描线动画 */
+        .scan-line {
+            position: absolute; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scanMove 2s ease-in-out infinite;
+            box-shadow: 0 0 15px var(--accent), 0 0 30px var(--accent-glow);
+        }
+        @keyframes scanMove {
+            0% { top: 0; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* 标签页 */
+        .tab-btn {
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            background: transparent; border: 1px solid var(--border);
+            color: var(--fg-muted); font-family: 'Rajdhani', sans-serif;
+            font-weight: 600; font-size: 15px; transition: all 0.3s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn:hover { border-color: var(--accent-dim); color: var(--fg); }
+        .tab-btn.active {
+            background: var(--accent-glow); border-color: var(--accent);
+            color: var(--accent); box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        /* 卡片 */
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 24px; transition: all 0.3s;
+        }
+        .card:hover { border-color: rgba(0,255,136,0.2); }
+
+        /* 输入框 */
+        .input-field {
+            width: 100%; background: var(--bg); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px; color: var(--fg);
+            font-family: 'Poppins', sans-serif; font-size: 14px;
+            transition: all 0.3s; outline: none; resize: vertical;
+        }
+        .input-field:focus {
+            border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .input-field::placeholder { color: var(--fg-muted); }
+
+        /* 按钮 */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+            color: var(--bg); font-weight: 700; padding: 14px 32px;
+            border-radius: 10px; border: none; cursor: pointer;
+            font-family: 'Rajdhani', sans-serif; font-size: 16px;
+            letter-spacing: 0.5px; transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,255,136,0.3);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled {
+            opacity: 0.5; cursor: not-allowed; transform: none;
+            box-shadow: none;
+        }
+
+        .btn-demo {
+            background: var(--bg-card-alt); border: 1px solid var(--border);
+            color: var(--fg-muted); padding: 8px 16px; border-radius: 8px;
+            cursor: pointer; font-size: 13px; transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-demo:hover {
+            border-color: var(--warning); color: var(--warning);
+            background: var(--warning-glow);
+        }
+
+        /* 结果面板 */
+        .result-panel {
+            display: none; animation: slideUp 0.5s ease;
+        }
+        .result-panel.show { display: block; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 威胁等级条 */
+        .threat-bar {
+            height: 8px; border-radius: 4px; background: var(--bg);
+            overflow: hidden; position: relative;
+        }
+        .threat-bar-fill {
+            height: 100%; border-radius: 4px; transition: width 1.5s ease;
+            position: relative;
+        }
+        .threat-bar-fill::after {
+            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 20px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+            animation: barShine 2s ease-in-out infinite;
+        }
+        @keyframes barShine {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* 扫描动画覆盖层 */
+        .scanning-overlay {
+            display: none; position: relative; overflow: hidden;
+            border-radius: 10px; border: 1px solid var(--accent);
+        }
+        .scanning-overlay.active { display: block; }
+        .scanning-overlay .scan-line {
+            position: absolute; left: 0; right: 0; height: 2px; z-index: 5;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scanMove 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px var(--accent);
+        }
+        .scan-text {
+            padding: 40px; text-align: center; font-family: 'Rajdhani', sans-serif;
+            font-size: 18px; color: var(--accent); letter-spacing: 2px;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed; top: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .toast {
+            padding: 14px 20px; border-radius: 10px; font-size: 14px;
+            animation: toastIn 0.4s ease, toastOut 0.4s ease 3.6s forwards;
+            display: flex; align-items: center; gap: 10px; max-width: 380px;
+            border: 1px solid; backdrop-filter: blur(10px);
+        }
+        .toast-safe { background: rgba(0,255,136,0.1); border-color: rgba(0,255,136,0.3); color: var(--accent); }
+        .toast-warning { background: rgba(255,184,0,0.1); border-color: rgba(255,184,0,0.3); color: var(--warning); }
+        .toast-danger { background: rgba(255,71,87,0.1); border-color: rgba(255,71,87,0.3); color: var(--danger); }
+        @keyframes toastIn { from { opacity:0; transform:translateX(100px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes toastOut { to { opacity:0; transform:translateX(100px); } }
+
+        /* 统计卡片 */
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 20px; text-align: center;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            border-radius: 14px 14px 0 0;
+        }
+        .stat-card.green::before { background: var(--accent); }
+        .stat-card.amber::before { background: var(--warning); }
+        .stat-card.red::before { background: var(--danger); }
+        .stat-card.blue::before { background: #3b82f6; }
+
+        /* 历史记录项 */
+        .history-item {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px; transition: all 0.3s;
+            display: flex; align-items: center; gap: 14px;
+        }
+        .history-item:hover { border-color: rgba(0,255,136,0.2); transform: translateX(4px); }
+
+        /* 语言选择器 */
+        .lang-select {
+            background: var(--bg-card); border: 1px solid var(--border);
+            color: var(--fg); padding: 8px 12px; border-radius: 8px;
+            font-size: 13px; cursor: pointer; outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        .lang-select:focus { border-color: var(--accent); }
+        .lang-select option { background: var(--bg-card); color: var(--fg); }
+
+        /* 实时威胁源 */
+        .feed-item {
+            padding: 12px 16px; border-left: 3px solid var(--border);
+            background: var(--bg-card); border-radius: 0 8px 8px 0;
+            animation: feedIn 0.4s ease; margin-bottom: 8px;
+        }
+        .feed-item.danger { border-left-color: var(--danger); }
+        .feed-item.warning { border-left-color: var(--warning); }
+        @keyframes feedIn { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+
+        /* How it works 步骤 */
+        .step-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 28px 20px; text-align: center;
+            transition: all 0.3s; position: relative;
+        }
+        .step-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .step-number {
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--accent-glow); border: 2px solid var(--accent);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Rajdhani', sans-serif; font-weight: 700;
+            font-size: 20px; color: var(--accent); margin: 0 auto 16px;
+        }
+
+        /* 危险闪烁效果 */
+        .danger-flash {
+            animation: dangerFlash 0.5s ease 3;
+        }
+        @keyframes dangerFlash {
+            0%, 100% { box-shadow: none; }
+            50% { box-shadow: 0 0 40px rgba(255,71,87,0.4), inset 0 0 40px rgba(255,71,87,0.05); }
+        }
+        .safe-glow {
+            animation: safeGlow 0.5s ease 2;
+        }
+        @keyframes safeGlow {
+            0%, 100% { box-shadow: none; }
+            50% { box-shadow: 0 0 40px rgba(0,255,136,0.3), inset 0 0 40px rgba(0,255,136,0.03); }
+        }
+
+        /* 扫描器面板切换 */
+        .scanner-panel { display: none; }
+        .scanner-panel.active { display: block; animation: slideUp 0.3s ease; }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .shield-container { width: 130px; height: 130px; }
+            .shield-icon { font-size: 52px; }
+            .tab-btn { padding: 8px 14px; font-size: 13px; }
+            .tab-btn span { display: none; }
+        }
+
+        /* 减少动画偏好 */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* 浮动粒子 */
+        .particle {
+            position: absolute; width: 3px; height: 3px; background: var(--accent);
+            border-radius: 50%; opacity: 0; pointer-events: none;
+        }
+        .particle:nth-child(1) { animation: particleFloat 6s 0s infinite; left: 10%; }
+        .particle:nth-child(2) { animation: particleFloat 8s 1s infinite; left: 30%; }
+        .particle:nth-child(3) { animation: particleFloat 7s 2s infinite; left: 50%; }
+        .particle:nth-child(4) { animation: particleFloat 9s 0.5s infinite; left: 70%; }
+        .particle:nth-child(5) { animation: particleFloat 6.5s 1.5s infinite; left: 90%; }
+        @keyframes particleFloat {
+            0% { bottom: 0; opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { bottom: 200px; opacity: 0; transform: translateX(30px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景效果 -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- 头部导航 -->
+    <header class="sticky top-0 z-50 backdrop-blur-xl border-b" style="background:rgba(6,11,20,0.85);border-color:var(--border)">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--accent-glow);border:1px solid var(--accent)">
+                    <i class="fa-solid fa-shield-halved" style="color:var(--accent);font-size:18px"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-lg leading-tight" style="color:var(--accent)">Scam Shield Bhavt</h1>
+                    <p class="text-xs" style="color:var(--fg-muted)">AI-Powered Scam Detection</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <select class="lang-select" id="langSelect" aria-label="Select language">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="mr">मराठी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="te">తెలుగు</option>
+                </select>
+                <button onclick="UI.clearHistory()" class="btn-demo" title="Clear History">
+                    <i class="fa-solid fa-trash-can mr-1"></i> Clear
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10">
+        <!-- Hero 区域 -->
+        <section class="py-16 px-4 text-center relative">
+            <div class="particle"></div><div class="particle"></div><div class="particle"></div>
+            <div class="particle"></div><div class="particle"></div>
+            <div class="shield-container mb-8">
+                <div class="shield-glow"></div>
+                <div class="shield-ring shield-ring-1"></div>
+                <div class="shield-ring shield-ring-2"></div>
+                <div class="shield-ring shield-ring-3"></div>
+                <div class="shield-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            </div>
+            <h2 class="font-display font-bold text-4xl md:text-5xl mb-4" style="color:var(--fg)">
+                Detect Scams Before They <span style="color:var(--accent)">Strike</span>
+            </h2>
+            <p class="text-lg max-w-2xl mx-auto mb-8" style="color:var(--fg-muted)">
+                AI-powered analysis of messages, links, calls, and transactions — with alerts in your language.
+            </p>
+            <!-- 快速演示按钮 -->
+            <div class="flex flex-wrap justify-center gap-3 mb-4">
+                <span class="text-xs font-semibold px-3 py-1 rounded-full" style="background:var(--danger-glow);color:var(--danger);border:1px solid rgba(255,71,87,0.3)">
+                    <i class="fa-solid fa-bolt mr-1"></i> QUICK DEMO SCENARIOS
+                </span>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button class="btn-demo" onclick="UI.runDemo('kyc')"><i class="fa-solid fa-id-card mr-1"></i> KYC Scam</button>
+                <button class="btn-demo" onclick="UI.runDemo('lottery')"><i class="fa-solid fa-trophy mr-1"></i> Lottery Fraud</button>
+                <button class="btn-demo" onclick="UI.runDemo('otp')"><i class="fa-solid fa-key mr-1"></i> OTP Trap</button>
+                <button class="btn-demo" onclick="UI.runDemo('phishing')"><i class="fa-solid fa-link mr-1"></i> Phishing Link</button>
+                <button class="btn-demo" onclick="UI.runDemo('scamCall')"><i class="fa-solid fa-phone-slash mr-1"></i> Scam Call</button>
+                <button class="btn-demo" onclick="UI.runDemo('safeMsg')"><i class="fa-solid fa-check mr-1"></i> Safe Message</button>
+            </div>
+        </section>
+
+        <!-- 主扫描器区域 -->
+        <section class="max-w-4xl mx-auto px-4 pb-8">
+            <div class="card" id="mainCard">
+                <!-- 标签页导航 -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="tab-btn active" data-tab="message" onclick="UI.switchTab('message')">
+                        <i class="fa-solid fa-message"></i> <span>Message</span>
+                    </button>
+                    <button class="tab-btn" data-tab="link" onclick="UI.switchTab('link')">
+                        <i class="fa-solid fa-link"></i> <span>Link</span>
+                    </button>
+                    <button class="tab-btn" data-tab="call" onclick="UI.switchTab('call')">
+                        <i class="fa-solid fa-phone"></i> <span>Call</span>
+                    </button>
+                    <button class="tab-btn" data-tab="transaction" onclick="UI.switchTab('transaction')">
+                        <i class="fa-solid fa-money-bill-transfer"></i> <span>Transaction</span>
+                    </button>
+                </div>
+
+                <!-- 消息扫描器 -->
+                <div class="scanner-panel active" id="panel-message">
+                    <label class="block text-sm font-semibold mb-2" style="color:var(--fg-muted)">
+                        <i class="fa-solid fa-message mr-1"></i> Paste the suspicious message
+                    </label>
+                    <textarea class="input-field" id="messageInput" rows="5"
+                        placeholder="Paste any WhatsApp, SMS, or email message here to analyze for scam patterns..."></textarea>
+                    <div class="flex justify-end mt-4">
+                        <button class="btn-primary" onclick="UI.runScan('message')">
+                            <i class="fa-solid fa-magnifying-glass"></i> Analyze Message
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 链接扫描器 -->
+                <div class="scanner-panel" id="panel-link">
+                    <label class="block text-sm font-semibold mb-2" style="color:var(--fg-muted)">
+                        <i class="fa-solid fa-link mr-1"></i> Enter the suspicious URL
+                    </label>
+                    <input class="input-field" id="linkInput" type="url"
+                        placeholder="https://example.com/suspicious-page">
+                    <div class="flex justify-end mt-4">
+                        <button class="btn-primary" onclick="UI.runScan('link')">
+                            <i class="fa-solid fa-magnifying-glass"></i> Check Link
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 电话扫描器 -->
+                <div class="scanner-panel" id="panel-call">
+                    <label class="block text-sm font-semibold mb-2" style="color:var(--fg-muted)">
+                        <i class="fa-solid fa-phone mr-1"></i> Enter the phone number
+                    </label>
+                    <input class="input-field" id="callInput" type="tel"
+                        placeholder="+91 98765 43210 or +1 800 123 4567">
+                    <div class="flex justify-end mt-4">
+                        <button class="btn-primary" onclick="UI.runScan('call')">
+                            <i class="fa-solid fa-magnifying-glass"></i> Lookup Number
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 交易扫描器 -->
+                <div class="scanner-panel" id="panel-transaction">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color:var(--fg-muted)">
+                                <i class="fa-solid fa-indian-rupee-sign mr-1"></i> Amount (INR)
+                            </label>
+                            <input class="input-field" id="txnAmount" type="number" placeholder="50000">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color:var(--fg-muted)">
+                                <i class="fa-solid fa-user mr-1"></i> Recipient
+                            </label>
+                            <input class="input-field" id="txnRecipient" type="text" placeholder="Name or UPI ID">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color:var(--fg-muted)">
+                                <i class="fa-solid fa-clock mr-1"></i> Time of Transaction
+                            </label>
+                            <input class="input-field" id="txnTime" type="time" value="14:30">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color:var(--fg-muted)">
+                                <i class="fa-solid fa-building-columns mr-1"></i> Method
+                            </label>
+                            <select class="input-field" id="txnMethod">
+                                <option value="upi">UPI</option>
+                                <option value="imps">IMPS</option>
+                                <option value="neft">NEFT</option>
+                                <option value="rtgs">RTGS</option>
+                                <option value="card">Card Payment</option>
+                                <option value="crypto">Crypto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <button class="btn-primary" onclick="UI.runScan('transaction')">
+                            <i class="fa-solid fa-magnifying-glass"></i> Assess Risk
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 扫描动画 -->
+                <div class="scanning-overlay mt-6" id="scanningOverlay">
+                    <div class="scan-line"></div>
+                    <div class="scan-text" id="scanText">ANALYZING PATTERNS...</div>
+                </div>
+
+                <!-- 结果面板 -->
+                <div class="result-panel mt-6" id="resultPanel">
+                    <div class="border-t pt-6" style="border-color:var(--border)">
+                        <!-- 威胁等级 -->
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-display font-bold text-lg" id="resultTitle">Analysis Result</h3>
+                            <span class="px-3 py-1 rounded-full text-sm font-bold" id="threatBadge">SAFE</span>
+                        </div>
+                        <div class="threat-bar mb-4">
+                            <div class="threat-bar-fill" id="threatBarFill" style="width:0%"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 mb-4 text-center text-sm">
+                            <div>
+                                <div class="font-bold text-lg" id="scoreValue" style="color:var(--accent)">0</div>
+                                <div style="color:var(--fg-muted)">Threat Score</div>
+                            </div>
+                            <div>
+                                <div class="font-bold text-lg" id="signalCount" style="color:var(--warning)">0</div>
+                                <div style="color:var(--fg-muted)">Signals Found</div>
+                            </div>
+                            <div>
+                                <div class="font-bold text-lg" id="scanTime" style="color:var(--fg)">0ms</div>
+                                <div style="color:var(--fg-muted)">Scan Time</div>
+                            </div>
+                        </div>
+                        <!-- 本地语言警报 -->
+                        <div class="rounded-xl p-4 mb-4" id="vernacularAlert" style="background:var(--bg);border:1px solid var(--border)">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fa-solid fa-language" style="color:var(--accent)"></i>
+                                <span class="text-sm font-semibold" style="color:var(--fg-muted)">Alert in your language:</span>
+                            </div>
+                            <p class="text-lg font-semibold" id="vernacularText" style="color:var(--fg)"></p>
+                        </div>
+                        <!-- 检测到的信号 -->
+                        <div id="signalsContainer" class="space-y-2 mb-4"></div>
+                        <!-- 建议操作 -->
+                        <div class="rounded-xl p-4" id="actionsContainer" style="background:var(--bg);border:1px solid var(--border)">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fa-solid fa-list-check" style="color:var(--accent)"></i>
+                                <span class="text-sm font-semibold" style="color:var(--fg-muted)">Recommended Actions:</span>
+                            </div>
+                            <ul id="actionsList" class="space-y-1"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计仪表板 -->
+        <section class="max-w-4xl mx-auto px-4 py-8">
+            <h3 class="font-display font-bold text-2xl mb-6 text-center">
+                <i class="fa-solid fa-chart-line mr-2" style="color:var(--accent)"></i>
+                Threat Intelligence Dashboard
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card green">
+                    <div class="font-display font-bold text-3xl" style="color:var(--accent)" id="statScans">0</div>
+                    <div class="text-sm mt-1" style="color:var(--fg-muted)">Total Scans</div>
+                </div>
+                <div class="stat-card red">
+                    <div class="font-display font-bold text-3xl" style="color:var(--danger)" id="statThreats">0</div>
+                    <div class="text-sm mt-1" style="color:var(--fg-muted)">Threats Found</div>
+                </div>
+                <div class="stat-card amber">
+                    <div class="font-display font-bold text-3xl" style="color:var(--warning)" id="statWarnings">0</div>
+                    <div class="text-sm mt-1" style="color:var(--fg-muted)">Warnings</div>
+                </div>
+                <div class="stat-card blue">
+                    <div class="font-display font-bold text-3xl" style="color:#3b82f6" id="statSafe">0</div>
+                    <div class="text-sm mt-1" style="color:var(--fg-muted)">Safe Results</div>
+                </div>
+            </div>
+
+            <!-- 实时威胁源 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card">
+                    <h4 class="font-display font-bold text-lg mb-4">
+                        <i class="fa-solid fa-rss mr-2" style="color:var(--danger)"></i>
+                        Live Threat Feed
+                    </h4>
+                    <div id="threatFeed" class="space-y-2 max-h-64 overflow-y-auto">
+                        <div class="text-center py-8" style="color:var(--fg-muted)">
+                            <i class="fa-solid fa-satellite-dish text-2xl mb-2 block" style="opacity:0.3"></i>
+                            Scanning for threats...
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 class="font-display font-bold text-lg mb-4">
+                        <i class="fa-solid fa-fire mr-2" style="color:var(--warning)"></i>
+                        Top Scam Categories
+                    </h4>
+                    <div id="scamCategories" class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">KYC/Account Fraud</span>
+                            <div class="flex items-center gap-2">
+                                <div class="h-2 rounded-full" style="width:120px;background:var(--bg)"><div class="h-2 rounded-full" style="width:85%;background:var(--danger)"></div></div>
+                                <span class="text-xs font-bold" style="color:var(--danger)">85%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">OTP/Password Theft</span>
+                            <div class="flex items-center gap-2">
+                                <div class="h-2 rounded-full" style="width:120px;background:var(--bg)"><div class="h-2 rounded-full" style="width:72%;background:var(--warning)"></div></div>
+                                <span class="text-xs font-bold" style="color:var(--warning)">72%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">Lottery/Prize Scam</span>
+                            <div class="flex items-center gap-2">
+                                <div class="h-2 rounded-full" style="width:120px;background:var(--bg)"><div class="h-2 rounded-full" style="width:68%;background:var(--warning)"></div></div>
+                                <span class="text-xs font-bold" style="color:var(--warning)">68%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">Phishing Links</span>
+                            <div class="flex items-center gap-2">
+                                <div class="h-2 rounded-full" style="width:120px;background:var(--bg)"><div class="h-2 rounded-full" style="width:60%;background:var(--accent)"></div></div>
+                                <span class="text-xs font-bold" style="color:var(--accent)">60%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">Impersonation Calls</span>
+                            <div class="flex items-center gap-2">
+                                <div class="h-2 rounded-full" style="width:120px;background:var(--bg)"><div class="h-2 rounded-full" style="width:55%;background:var(--accent)"></div></div>
+                                <span class="text-xs font-bold" style="color:var(--accent)">55%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm">Crypto/Investment Fraud</span>
+                            <div class="flex items-center gap-2">
+                                <div class="h-2 rounded-full" style="width:120px;background:var(--bg)"><div class="h-2 rounded-full" style="width:48%;background:#3b82f6"></div></div>
+                                <span class="text-xs font-bold" style="color:#3b82f6">48%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 扫描历史 -->
+        <section class="max-w-4xl mx-auto px-4 py-8">
+            <h3 class="font-display font-bold text-2xl mb-6 text-center">
+                <i class="fa-solid fa-clock-rotate-left mr-2" style="color:var(--accent)"></i>
+                Scan History
+            </h3>
+            <div id="historyContainer" class="space-y-3">
+                <div class="text-center py-8" style="color:var(--fg-muted)">
+                    <i class="fa-solid fa-inbox text-3xl mb-2 block" style="opacity:0.3"></i>
+                    No scans yet. Try analyzing a message or link above.
+                </div>
+            </div>
+        </section>
+
+        <!-- 工作原理 -->
+        <section class="max-w-4xl mx-auto px-4 py-12">
+            <h3 class="font-display font-bold text-2xl mb-8 text-center">
+                <i class="fa-solid fa-gears mr-2" style="color:var(--accent)"></i>
+                How Scam Shield Bhavt Works
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <i class="fa-solid fa-paste text-2xl mb-3" style="color:var(--accent)"></i>
+                    <h4 class="font-display font-bold mb-2">Input</h4>
+                    <p class="text-sm" style="color:var(--fg-muted)">Paste message, link, number, or transaction details</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <i class="fa-solid fa-brain text-2xl mb-3" style="color:var(--accent)"></i>
+                    <h4 class="font-display font-bold mb-2">AI Analysis</h4>
+                    <p class="text-sm" style="color:var(--fg-muted)">Pattern matching against 200+ known scam indicators</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <i class="fa-solid fa-language text-2xl mb-3" style="color:var(--accent)"></i>
+                    <h4 class="font-display font-bold mb-2">Vernacular Alert</h4>
+                    <p class="text-sm" style="color:var(--fg-muted)">Get warnings in Hindi, Marathi, Tamil, Bengali, Telugu</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <i class="fa-solid fa-shield-halved text-2xl mb-3" style="color:var(--accent)"></i>
+                    <h4 class="font-display font-bold mb-2">Stay Protected</h4>
+                    <p class="text-sm" style="color:var(--fg-muted)">Follow actionable steps to block and report the scam</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="border-t py-8 px-4 text-center" style="border-color:var(--border)">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <i class="fa-solid fa-shield-halved" style="color:var(--accent)"></i>
+            <span class="font-display font-bold" style="color:var(--accent)">Scam Shield Bhavt</span>
+        </div>
+        <p class="text-sm" style="color:var(--fg-muted)">
+            Protecting millions with AI-powered scam detection. No data stored on servers — all processing happens in your browser.
+        </p>
+    </footer>
+
+<script>
+/* ============================================================
+   翻译对象 - 支持6种语言的本地化警报
+   ============================================================ */
+const TRANSLATIONS = {
+    en: {
+        safe: "Safe — No threats detected in this content.",
+        suspicious: "Suspicious — Some patterns match known scam techniques. Be cautious.",
+        dangerous: "Dangerous — This is very likely a scam! Do not engage.",
+        actionIgnore: "No action needed. This appears legitimate.",
+        actionVerify: "Verify the sender through an official channel before responding.",
+        actionBlock: "Block the sender and delete the message immediately.",
+        actionReport: "Report to the cybercrime portal: cybercrime.gov.in",
+        actionNoClick: "Never click links from unknown or unverified sources.",
+        actionNoShare: "Never share OTP, PIN, password, or Aadhaar/PAN details.",
+        actionCallBank: "Call your bank's official helpline to confirm.",
+        actionNoPay: "Do not make any payment to unverified recipients.",
+        actionScreenshot: "Take a screenshot as evidence before deleting.",
+        sigUrgency: "Urgency language detected — scammers create false pressure",
+        sigMoney: "Financial terms detected — potential money extraction attempt",
+        sigThreat: "Thening language detected — intimidation is a common scam tactic",
+        sigImpersonation: "Brand/government impersonation detected",
+        sigOTP: "OTP or credential request detected — never share these",
+        sigPrize: "Prize/lottery claim detected — these are almost always scams",
+        sigLink: "Suspicious link pattern detected",
+        sigPersonalInfo: "Request for sensitive personal information",
+        sigSuspiciousTLD: "Unusual domain extension — commonly used in phishing",
+        sigShortened: "Shortened URL — destination is hidden",
+        sigIPUrl: "IP address used instead of domain name",
+        sigBrandSpoof: "Brand name impersonation in URL",
+        sigNoHTTPS: "No HTTPS encryption on the link",
+        sigInternational: "International number — common in scam calls",
+        sigSpamPattern: "Number matches known spam patterns",
+        sigHighAmount: "Unusually high transaction amount",
+        sigUnusualTime: "Transaction at unusual hours",
+        sigUnknownRecipient: "Transaction to unknown or new recipient",
+        sigCryptoRisk: "Crypto transactions are hard to reverse — high risk",
+        sigRoundAmount: "Round figure amount — typical of scam requests",
+    },
+    hi: {
+        safe: "सुरक्षित — इस सामग्री में कोई खतरा नहीं पाया गया।",
+        suspicious: "संदिग्ध — कुछ पैटर्न ज्ञात धोखाधड़ी तकनीकों से मेल खाते हैं। सावधान रहें।",
+        dangerous: "खतरनाक — यह बहुत संभवतः एक धोखाधड़ी है! कोई प्रतिक्रिया न करें।",
+        actionIgnore: "कोई कार्रवाई आवश्यक नहीं। यह प्रमाणित लगता है।",
+        actionVerify: "जवाब देने से पहले आधिकारिक चैनल से भेजने वाले की पुष्टि करें।",
+        actionBlock: "भेजने वाले को ब्लॉक करें और संदेश तुरंत हटा दें।",
+        actionReport: "साइबर क्राइम पोर्टल पर रिपोर्ट करें: cybercrime.gov.in",
+        actionNoClick: "अज्ञात स्रोतों से लिंक पर कभी क्लिक न करें।",
+        actionNoShare: "OTP, PIN, पासवर्ड, या आधार/PAN विवरण कभी साझा न करें।",
+        actionCallBank: "पुष्टि करने के लिए अपने बैंक के आधिकारिक हेल्पलाइन पर कॉल करें।",
+        actionNoPay: "अनसत्यापित प्राप्तकर्ताओं को कोई भुगतान न करें।",
+        actionScreenshot: "हटाने से पहले साक्ष्य के रूप में स्क्रीनशॉट लें।",
+        sigUrgency: "तत्कालता की भाषा पाई गई — धोखाधड़ी करने वाले झूठी दबाव बनाते हैं",
+        sigMoney: "वित्तीय शब्द पाए गए — संभावित धन निकालने का प्रयास",
+        sigThreat: "धमकी भरी भाषा पाई गई — धमकाना एक सामान्य धोखाधड़ी तरीका है",
+        sigImpersonation: "ब्रांड/सरकार की नकल पाई गई",
+        sigOTP: "OTP या क्रेडेंशियल अनुरोध पाया गया — इन्हें कभी साझा न करें",
+        sigPrize: "पुरस्कार/लॉटरी दावा पाया गया — ये लगभग हमेशा धोखाधड़ी होते हैं",
+        sigLink: "संदिग्ध लिंक पैटर्न पाया गया",
+        sigPersonalInfo: "संवेदनशील व्यक्तिगत जानकारी का अनुरोध",
+        sigSuspiciousTLD: "असामान्य डोमेन एक्सटेंशन — फ़िशिंग में आमतौर पर उपयोग किया जाता है",
+        sigShortened: "छोटा किया गया URL — गंतव्य छिपा हुआ है",
+        sigIPUrl: "डोमेन नाम के बजाय IP पता उपयोग किया गया",
+        sigBrandSpoof: "URL में ब्रांड नाम की नकल",
+        sigNoHTTPS: "लिंक पर HTTPS एन्क्रिप्शन नहीं",
+        sigInternational: "अंतरराष्ट्रीय नंबर — धोखाधड़ी कॉल में आम",
+        sigSpamPattern: "नंबर ज्ञात स्पैम पैटर्न से मेल खाता है",
+        sigHighAmount: "असामान्य रूप से उच्च लेनदेन राशि",
+        sigUnusualTime: "असामान्य समय पर लेनदेन",
+        sigUnknownRecipient: "अज्ञात या नए प्राप्तकर्ता को लेनदेन",
+        sigCryptoRisk: "क्रिप्टो लेनदेन वापस लेना मुश्किल है — उच्च जोखिम",
+        sigRoundAmount: "पूर्ण राशि — धोखाधड़ी अनुरोध के विशिष्ट",
+    },
+    mr: {
+        safe: "सुरक्षित — या सामग्रीत कोणताही धोकादायक घटक सापडला नाही.",
+        suspicious: "संशयास्पद — काही नमुने ज्ञात फसवणुकी तंत्रांशी जुळत आहेत. काळजी घ्या.",
+        dangerous: "धोकादायक — हे अतिशय शक्यतेने एक फसवणूक आहे! कोणतीही प्रतिक्रिया करू नका.",
+        actionIgnore: "कोणतीही कार्यवाही आवश्यक नाही. हे वैध दिसत आहे.",
+        actionVerify: "प्रतिसाद देण्यापूर्वी अधिकृत माध्यमाद्वारे प्रेषकाची पडताळणी करा.",
+        actionBlock: "प्रेषकाला ब्लॉक करा आणि संदेश तात्काळ हटवा.",
+        actionReport: "सायबर क्राइम पोर्टलवर तक्रार नोंदवा: cybercrime.gov.in",
+        actionNoClick: "अज्ञात स्रोतांकडून लिंकवर कधीही क्लिक करू नका.",
+        actionNoShare: "OTP, PIN, पासवर्ड, किंवा आधार/PAN तपशील कधीही शेअर करू नका.",
+        actionCallBank: "पुष्टीकरणासाठी आपल्या बँकेच्या अधिकृत हेल्पलाइनवर कॉल करा.",
+        actionNoPay: "असत्यापित प्राप्तकर्त्यांना कोणतेही पैसे पाठवू नका.",
+        actionScreenshot: "हटवण्यापूर्वी पुरावा म्हणून स्क्रीनशॉट घ्या.",
+        sigUrgency: "घाईची भाषा आढळली — फसवणुकी करणारे खोटे दबाव तयार करतात",
+        sigMoney: "आर्थिक संज्ञा आढळल्या — संभाव्य पैसे काढण्याचा प्रयत्न",
+        sigThreat: "धमकीची भाषा आढळली — धमकावणे हा सामान्य फसवणुकीचा मार्ग आहे",
+        sigImpersonation: "ब्रँड/सरकारचे अनुकरण आढळले",
+        sigOTP: "OTP किंवा क्रेडेंशियल विनंती आढळली — हे कधीही शेअर करू नका",
+        sigPrize: "पारितोषिक/लॉटरी दावा आढळला — हे जवळजवळ नेहमी फसवणूक असतात",
+        sigLink: "संशयास्पद लिंक नमुना आढळला",
+        sigPersonalInfo: "संवेदनशील वैयक्तिक माहितीची विनंती",
+        sigSuspiciousTLD: "असामान्य डोमेन एक्सटेंशन — फिशिंगमध्ये सामान्यतः वापरले जाते",
+        sigShortened: "छोटे केलेले URL — गंतव्य लपवलेले आहे",
+        sigIPUrl: "डोमेन नावाऐवजी IP पत्ता वापरला",
+        sigBrandSpoof: "URL मध्ये ब्रँड नावाचे अनुकरण",
+        sigNoHTTPS: "लिंकवर HTTPS एन्क्रिप्शन नाही",
+        sigInternational: "आंतरराष्ट्रीय क्रमांक — फसवणुकी कॉलमध्ये सामान्य",
+        sigSpamPattern: "क्रमांक ज्ञात स्पॅम नमुन्याशी जुळतो",
+        sigHighAmount: "असामान्यरित्या उच्च व्यवहार रक्कम",
+        sigUnusualTime: "असामान्य वेळी व्यवहार",
+        sigUnknownRecipient: "अज्ञात किंवा नवीन प्राप्तकर्त्याला व्यवहार",
+        sigCryptoRisk: "क्रिप्टो व्यवहार परत घेणे कठीण — उच्च जोखीम",
+        sigRoundAmount: "पूर्ण रक्कम — फसवणुकी विनंतींचे वैशिष्ट्यपूर्ण",
+    },
+    ta: {
+        safe: "பாதுகாப்பானது — இந்த உள்ளடக்கத்தில் எந்த அச்சுறுத்தலும் கண்டறியப்படவில்லை.",
+        suspicious: "சந்தேகத்திற்குரியது — சில முறைகள் அறியப்பட்ட மோசடி நுட்பங்களுடன் பொருந்துகின்றன. எச்சரிக்கையாக இருங்கள்.",
+        dangerous: "ஆபத்தானது — இது மிகவும் சாத்தியமான ஒரு மோசடி! எந்த பதிலும் அளிக்க வேண்டாம்.",
+        actionIgnore: "எந்த செயலும் தேவையில்லை. இது சரியானதாகத் தெரிகிறது.",
+        actionVerify: "பதிலளிப்பதற்கு முன் அதிகாரப்பூர்வ சேனல் மூலம் அனுப்புநரைச் சரிபார்க்கவும்.",
+        actionBlock: "அனுப்புநரைத் தடுத்து, செய்தியை உடனடியாக நீக்கவும்.",
+        actionReport: "சைபர் கிரைம் போர்ட்டலில் புகாரளிக்கவும்: cybercrime.gov.in",
+        actionNoClick: "அறியப்படாத ஆதாரங்களிலிருந்து லிங்க்குகளை ஒருபோதும் கிளிக் செய்யாதீர்கள்.",
+        actionNoShare: "OTP, PIN, கடவுச்சொல், அல்லது ஆதார்/PAN விவரங்களை ஒருபோதும் பகிரவும்.",
+        actionCallBank: "உறுதிப்படுத்த உங்கள் வங்கியின் அதிகாரப்பூர்வ ஹெல்ப்லைனுக்கு அழைக்கவும்.",
+        actionNoPay: "சரிபார்க்கப்படாத பெறுநர்களுக்கு எந்தக் கட்டணமும் செலுத்த வேண்டாம்.",
+        actionScreenshot: "நீக்கும் முன் ஆதாரமாக ஸ்கிரீன்ஷாட் எடுக்கவும்.",
+        sigUrgency: "அவசர மொழி கண்டறியப்பட்டது — மோசடியர்கள் போலி அழுத்தத்தை உருவாக்குகிறார்கள்",
+        sigMoney: "நிதி சொற்கள் கண்டறியப்பட்டன — சாத்தியமான பணம் பிரித்தெடுக்கும் முயற்சி",
+        sigThreat: "மிரட்டல் மொழி கண்டறியப்பட்டது — மிரட்டுவது ஒரு பொதுவான மோசடி தந்திரம்",
+        sigImpersonation: "பிராண்ட்/அரசு போலி கண்டறியப்பட்டது",
+        sigOTP: "OTP அல்லது சான்றுகள் கோரிக்கை கண்டறியப்பட்டது — இவற்றை ஒருபோதும் பகிரவும்",
+        sigPrize: "பரிசு/லாட்டரி கோரிக்கை கண்டறியப்பட்டது — இவை எப்போதும் மோசடிதான்",
+        sigLink: "சந்தேகத்திற்குரிய லிங்க் முறை கண்டறியப்பட்டது",
+        sigPersonalInfo: "உணர்திறன் தனிப்பட்ட தகவல் கோரிக்கை",
+        sigSuspiciousTLD: "அசாதாரண டொமைன் நீட்டிப்பு — ஃபிஷிங்கில் பொதுவாக பயன்படுத்தப்படுகிறது",
+        sigShortened: "சுருக்கப்பட்ட URL — இலக்கு மறைக்கப்பட்டுள்ளது",
+        sigIPUrl: "டொமைன் பெயருக்கு பதிலாக IP முகவரி பயன்படுத்தப்பட்டது",
+        sigBrandSpoof: "URL-ல் பிராண்ட் பெயர் போலி",
+        sigNoHTTPS: "லிங்கில் HTTPS குறியாக்கம் இல்லை",
+        sigInternational: "சர்வதேச எண் — மோசடி அழைப்புகளில் பொதுவானது",
+        sigSpamPattern: "எண் அறியப்பட்ட ஸ்பேம் முறைகளுடன் பொருந்துகிறது",
+        sigHighAmount: "அசாதாரணமாக அதிக பரிவர்த்தனை தொகை",
+        sigUnusualTime: "அசாதாரண நேரத்தில் பரிவர்த்தனை",
+        sigUnknownRecipient: "அறியப்படாத அல்லது புதிய பெறுநருக்கு பரிவர்த்தனை",
+        sigCryptoRisk: "கிரிப்டோ பரிவர்த்தனைகளை திரும்பப் பெறுவது கடினம் — அதிக இடர்",
+        sigRoundAmount: "வட்ட தொகை — மோசடி கோரிக்கைகளின் பொதுவான அம்சம்",
+    },
+    bn: {
+        safe: "নিরাপদ — এই বিষয়বস্তুতে কোনো হুমকি সনাক্ত করা হয়নি।",
+        suspicious: "সন্দেহজনক — কিছু প্যাটার্ন পরিচিত প্রতারণা কৌশলের সাথে মেলে। সতর্ক থাকুন।",
+        dangerous: "বিপজ্জনক — এটি অত্যন্ত সম্ভাব্য একটি প্রতারণা! কোনো প্রতিক্রিয়া করবেন না।",
+        actionIgnore: "কোনো পদক্ষেপের প্রয়োজন নেই। এটি বৈধ বলে মনে হচ্ছে।",
+        actionVerify: "উত্তর দেওয়ার আগে অফিসিয়াল চ্যানেলের মাধ্যমে প্রেরককে যাচাই করুন।",
+        actionBlock: "প্রেরককে ব্লক করুন এবং বার্তাটি তাৎক্ষণিকভাবে মুছে ফেলুন।",
+        actionReport: "সাইবার ক্রাইম পোর্টালে রিপোর্ট করুন: cybercrime.gov.in",
+        actionNoClick: "অজানা উৎস থেকে লিংকে কখনও ক্লিক করবেন না।",
+        actionNoShare: "OTP, PIN, পাসওয়ার্ড, বা আধার/PAN বিবরণ কখনও শেয়ার করবেন না।",
+        actionCallBank: "নিশ্চিত করতে আপনার ব্যাংকের অফিসিয়াল হেল্পলাইনে কল করুন।",
+        actionNoPay: "যাচাই না করা প্রাপককে কোনো অর্থ প্রদান করবেন না।",
+        actionScreenshot: "মুছে ফেলার আগে প্রমাণ হিসাবে স্ক্রিনশট নিন।",
+        sigUrgency: "জরুরি ভাষা সনাক্ত — প্রতারকরা মিথ্যা চাপ তৈরি করে",
+        sigMoney: "আর্থিক শব্দ সনাক্ত — সম্ভাব্য অর্থ সংগ্রহের প্রচেষ্টা",
+        sigThreat: "হুমকির ভাষা সনাক্ত — ভয় দেখানো একটি সাধারণ প্রতারণা কৌশল",
+        sigImpersonation: "ব্র্যান্ড/সরকারের ছদ্মবেশ সনাক্ত",
+        sigOTP: "OTP বা প্রমাণপত্রের অনুরোধ সনাক্ত — এগুলো কখনও শেয়ার করবেন না",
+        sigPrize: "পুরস্কার/লটারি দাবি সনাক্ত — এগুলো প্রায় সবসময়ই প্রতারণা",
+        sigLink: "সন্দেহজনক লিংক প্যাটার্ন সনাক্ত",
+        sigPersonalInfo: "সংবেদনশীল ব্যক্তিগত তথ্যের অনুরোধ",
+        sigSuspiciousTLD: "অস্বাভাবিক ডোমেইন এক্সটেনশন — ফিশিংয়ে সাধারণত ব্যবহৃত",
+        sigShortened: "সংক্ষিপ্ত URL — গন্তব্য লুকানো আছে",
+        sigIPUrl: "ডোমেইন নামের পরিবর্তে IP ঠিকানা ব্যবহৃত",
+        sigBrandSpoof: "URL-এ ব্র্যান্ডের নামের ছদ্মবেশ",
+        sigNoHTTPS: "লিংকে HTTPS এনক্রিপশন নেই",
+        sigInternational: "আন্তর্জাতিক নম্বর — প্রতারণা কলে সাধারণ",
+        sigSpamPattern: "নম্বর পরিচিত স্প্যাম প্যাটার্নের সাথে মেলে",
+        sigHighAmount: "অস্বাভাবিকভাবে উচ্চ লেনদেনের পরিমাণ",
+        sigUnusualTime: "অস্বাভাবিক সময়ে লেনদেন",
+        sigUnknownRecipient: "অজানা বা নতুন প্রাপকের কাছে লেনদেন",
+        sigCryptoRisk: "ক্রিপ্টো লেনদেন ফেরত পাওয়া কঠিন — উচ্চ ঝুঁকি",
+        sigRoundAmount: "গোল পরিমাণ — প্রতারণার অনুরোধের বৈশিষ্ট্য",
+    },
+    te: {
+        safe: "సురక్షితం — ఈ కంటెంట్‌లో ఏ ముప్పు కనుగొనబడలేదు.",
+        suspicious: "అనుమానాస్పదం — కొన్ని మాదిరులు తెలిసిన మోసపూరిత పద్ధతులతో సరిపోలుతున్నాయి. జాగ్రత్తగా ఉండండి.",
+        dangerous: "ప్రమాదకరం — ఇది చాలా సంభావ్యంగా ఒక మోసం! ఎలాంటి స్పందన చూపకండి.",
+        actionIgnore: "ఏ చర్య అవసరం లేదు. ఇది న్యాయమైనదిగా కనిపిస్తుంది.",
+        actionVerify: "స్పందించే ముందు అధికారిక చానెల్ ద్వారా పంపినవారిని ధృవీకరించండి.",
+        actionBlock: "పంపినవారిని బ్లాక్ చేయండి మరియు సందేశాన్ని వెంటనే తొలగించండి.",
+        actionReport: "సైబర్ క్రైమ్ పోర్టల్‌లో నివేదించండి: cybercrime.gov.in",
+        actionNoClick: "తెలియని మూలాల నుండి లింక్‌లపై ఎప్పుడూ క్లిక్ చేయకండి.",
+        actionNoShare: "OTP, PIN, పాస్‌వర్డ్, లేదా ఆధార్/PAN వివరాలను ఎప్పుడూ షేర్ చేయకండి.",
+        actionCallBank: "నిర్ధారించడానికి మీ బ్యాంకు అధికారిక హెల్ప్‌లైన్‌కు కాల్ చేయండి.",
+        actionNoPay: "ధృవీకరించని గ్రహీతలకు ఎలాంటి చెల్లింపు చేయకండి.",
+        actionScreenshot: "తొలగించే ముందు ఆధారంగా స్క్రీన్‌షాట్ తీసుకోండి.",
+        sigUrgency: "అత్యవసర భాష గుర్తించబడింది — మోసగాళ్లు తప్పుడు ఒత్తిడిని సృష్టిస్తారు",
+        sigMoney: "ఆర్థిక పదాలు గుర్తించబడ్డాయి — సంభావ్య డబ్బు సేకరణ ప్రయత్నం",
+        sigThreat: "బెదిరింపు భాష గుర్తించబడింది — బెదిరించడం సాధారణ మోసపూరిత వ్యూహం",
+        sigImpersonation: "బ్రాండ్/ప్రభుత్వ అనుకరణ గుర్తించబడింది",
+        sigOTP: "OTP లేదా ఆధారాల అభ్యర్థన గుర్తించబడింది — వీటిని ఎప్పుడూ షేర్ చేయకండి",
+        sigPrize: "బహుమతి/లాటరీ దావె గుర్తించబడింది — ఇవి దాదాపు ఎల్లప్పుడూ మోసాలు",
+        sigLink: "అనుమానాస్పద లింక్ మాదిరి గుర్తించబడింది",
+        sigPersonalInfo: "సున్నితమైన వ్యక్తిగత సమాచారం అభ్యర్థన",
+        sigSuspiciousTLD: "అసాధారణ డొమైన్ ఎక్స్‌టెన్షన్ — ఫిషింగ్‌లో సాధారణంగా ఉపయోగిస్తారు",
+        sigShortened: "సంక్షిప్త URL — గమ్యం దాచబడి ఉంది",
+        sigIPUrl: "డొమైన్ పేరుకు బదులుగా IP చిరునామా ఉపయోగించబడింది",
+        sigBrandSpoof: "URLలో బ్రాండ్ పేరు అనుకరణ",
+        sigNoHTTPS: "లింక్‌లో HTTPS ఎన్‌క్రిప్షన్ లేదు",
+        sigInternational: "అంతర్జాతీయ నంబర్ — మోసపూరిత కాల్స్‌లో సాధారణం",
+        sigSpamPattern: "నంబర్ తెలిసిన స్పామ్ మాదిరులతో సరిపోలుతుంది",
+        sigHighAmount: "అసాధారణంగా అధిక లావాదేవీ మొత్తం",
+        sigUnusualTime: "అసాధారణ సమయాల్లో లావాదేవీ",
+        sigUnknownRecipient: "తెలియని లేదా కొత్త గ్రహీతకు లావాదేవీ",
+        sigCryptoRisk: "క్రిప్టో లావాదేవీలను తిరిగి పొందడం కష్టం — అధిక ప్రమాదం",
+        sigRoundAmount: "గుండ్రని మొత్తం — మోసపూరిత అభ్యర్థనల లక్షణం",
+    }
+};
+
+/* ============================================================
+   欺诈检测引擎 - 纯规则引擎，无需外部API
+   ============================================================ */
+class ScamDetector {
+    constructor() {
+        /* 消息关键词权重 */
+        this.messageRules = {
+            urgency: {
+                words: ['urgent','immediately','act now','limited time','hurry','fast','asap','within 24 hours','within 48 hours','today','right now','don\'t delay','last chance','expiring','expires','समय सीमा','तुरंत','जल्दी','తక్షణమే','உடனடி','অবিলম্বে'],
+                weight: 15, key: 'sigUrgency'
+            },
+            money: {
+                words: ['money','payment','bank','account','transfer','debit','credit','upi','paytm','phonepe','gpay','gpay','rupee','rs.','₹','amount','withdrawal','deposit','balance','રૂપાయા','टाका','రూపాయలు','ரூபாய்'],
+                weight: 10, key: 'sigMoney'
+            },
+            threat: {
+                words: ['block','suspend','deactivate','legal action','police','court','arrest','fir','complaint','penalty','fine','imprisonment','criminal','सलाखों','गिरफ्तार','कानूनी कार्रवाई','ફૌజદારી','అరెస్ట్','கைது','গ্রেপ্তার'],
+                weight: 20, key: 'sigThreat'
+            },
+            impersonation: {
+                words: ['rbi','sbi','hdfc','icici','axis bank','government','income tax','customs','pm','prime minister','reserve bank','sebi','traid','ఆర్‌బీఐ','ஆர்பிஐ','আরবিআই'],
+                weight: 20, key: 'sigImpersonation'
+            },
+            otp: {
+                words: ['otp','one time password','verify','confirm','pin','cvv','expiry','otp-','ஓடிபி','ఓటీపీ','ওটিপি'],
+                weight: 25, key: 'sigOTP'
+            },
+            prize: {
+                words: ['won','lottery','prize','reward','congratulations','lucky','winner','jackpot','gift','જીત્યા','గెలువు','வென்றீர்கள்','জিতেছেন'],
+                weight: 25, key: 'sigPrize'
+            },
+            link: {
+                words: ['http://','https://','www.','.com','.xyz','.tk','.click','.top','.win','.bid','click here','tap here','link','download','క్లిక్','கிளிக்','ক্লিক'],
+                weight: 10, key: 'sigLink'
+            },
+            personalInfo: {
+                words: ['password','aadhaar','pan card','account number','card number','dob','date of birth','mother\'s maiden','आधार','पैन','ఆధార్','ஆதார்','আধার'],
+                weight: 25, key: 'sigPersonalInfo'
+            }
+        };
+
+        /* 可疑URL顶级域名 */
+        this.suspiciousTLDs = ['.xyz','.tk','.ml','.ga','.cf','.gq','.top','.win','.bid','.click','.stream','.download','.work','.party','.review','.trade','.date','.loan','.men','.cricket','.science','.faith'];
+        
+        /* 短链接服务 */
+        this.shorteners = ['bit.ly','tinyurl.com','t.co','goo.gl','ow.ly','is.gd','buff.ly','adf.ly','tiny.cc','rb.gy','cutt.ly'];
+
+        /* 品牌关键词（用于URL伪造检测） */
+        this.brandKeywords = ['paytm','phonepe','gpay','googlepay','sbi','hdfc','icici','axis','rbi','upi','amazon','flipkart','whatsapp','facebook','instagram','netflix'];
+
+        /* 已知诈骗电话前缀 */
+        this.scamPrefixes = ['+92','+234','+44 70','+44 870','+1 800','+263','+243','+881'];
+    }
+
+    /* 分析消息文本 */
+    analyzeMessage(text) {
+        const signals = [];
+        const lower = text.toLowerCase();
+        let totalScore = 0;
+
+        for (const [category, rule] of Object.entries(this.messageRules)) {
+            let found = [];
+            for (const word of rule.words) {
+                if (lower.includes(word.toLowerCase())) {
+                    found.push(word);
+                }
+            }
+            if (found.length > 0) {
+                /* 每找到一个关键词增加权重，最多3倍 */
+                const count = Math.min(found.length, 3);
+                const score = rule.weight * count;
+                totalScore += score;
+                signals.push({
+                    key: rule.key,
+                    score: score,
+                    details: `Found: "${found.slice(0, 3).join('", "')}"${found.length > 3 ? ` +${found.length - 3} more` : ''}`
+                });
+            }
+        }
+
+        /* 额外规则：全大写文本 */
+        const upperRatio = (text.replace(/[^a-zA-Z]/g, '').length > 0) 
+            ? (text.match(/[A-Z]/g) || []).length / text.replace(/[^a-zA-Z]/g, '').length 
+            : 0;
+        if (upperRatio > 0.7 && text.length > 20) {
+            totalScore += 10;
+            signals.push({ key: 'sigUrgency', score: 10, details: 'Excessive use of ALL CAPS — common in scam messages' });
+        }
+
+        /* 额外规则：过多感叹号 */
+        const exclCount = (text.match(/!/g) || []).length;
+        if (exclCount >= 3) {
+            totalScore += 8;
+            signals.push({ key: 'sigUrgency', score: 8, details: `Excessive exclamation marks (${exclCount}) — pressure tactic` });
+        }
+
+        return { signals, score: Math.min(totalScore, 100) };
+    }
+
+    /* 分析URL */
+    analyzeURL(url) {
+        const signals = [];
+        let totalScore = 0;
+        const lower = url.toLowerCase();
+
+        /* 检查可疑TLD */
+        for (const tld of this.suspiciousTLDs) {
+            if (lower.includes(tld)) {
+                totalScore += 30;
+                signals.push({ key: 'sigSuspiciousTLD', score: 30, details: `Uses suspicious TLD: ${tld}` });
+                break;
+            }
+        }
+
+        /* 检查短链接 */
+        for (const s of this.shorteners) {
+            if (lower.includes(s)) {
+                totalScore += 20;
+                signals.push({ key: 'sigShortened', score: 20, details: `Shortened URL detected: ${s}` });
+                break;
+            }
+        }
+
+        /* 检查IP地址URL */
+        if (/https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(lower)) {
+            totalScore += 35;
+            signals.push({ key: 'sigIPUrl', score: 35, details: 'Uses IP address instead of domain name' });
+        }
+
+        /* 检查品牌伪造 */
+        for (const brand of this.brandKeywords) {
+            if (lower.includes(brand) && !lower.includes(`${brand}.com`) && !lower.includes(`${brand}.in`)) {
+                totalScore += 30;
+                signals.push({ key: 'sigBrandSpoof', score: 30, details: `Brand name "${brand}" used in suspicious domain` });
+                break;
+            }
+        }
+
+        /* 检查HTTPS */
+        if (!lower.startsWith('https://')) {
+            totalScore += 15;
+            signals.push({ key: 'sigNoHTTPS', score: 15, details: 'No HTTPS encryption — data not secure' });
+        }
+
+        /* 检查过多子域名 */
+        const dotCount = (url.match(/\./g) || []).length;
+        if (dotCount > 4) {
+            totalScore += 15;
+            signals.push({ key: 'sigSuspiciousTLD', score: 15, details: `Excessive subdomains (${dotCount} dots) — obfuscation technique` });
+        }
+
+        /* 检查特殊字符 */
+        if (/[^\w\-\.\/\:\?\=\&\%\+\#]/.test(url)) {
+            totalScore += 10;
+            signals.push({ key: 'sigBrandSpoof', score: 10, details: 'Contains special characters — possible homograph attack' });
+        }
+
+        return { signals, score: Math.min(totalScore, 100) };
+    }
+
+    /* 分析电话号码 */
+    analyzePhone(number) {
+        const signals = [];
+        let totalScore = 0;
+        const cleaned = number.replace(/[\s\-\(\)]/g, '');
+
+        /* 检查国际诈骗前缀 */
+        for (const prefix of this.scamPrefixes) {
+            if (cleaned.startsWith(prefix.replace(/\s/g, ''))) {
+                totalScore += 40;
+                signals.push({ key: 'sigInternational', score: 40, details: `Matches known scam prefix: ${prefix}` });
+                break;
+            }
+        }
+
+        /* 检查非印度国际号码 */
+        if (cleaned.startsWith('+') && !cleaned.startsWith('+91') && signals.length === 0) {
+            totalScore += 25;
+            signals.push({ key: 'sigInternational', score: 25, details: `International number (${cleaned.substring(0, 5)}) — verify caller identity` });
+        }
+
+        /* 检查重复数字模式 */
+        if (/(.)\1{4,}/.test(cleaned)) {
+            totalScore += 15;
+            signals.push({ key: 'sigSpamPattern', score: 15, details: 'Repeating digit pattern — common in spoofed numbers' });
+        }
+
+        /* 检查短号码 */
+        const digitsOnly = cleaned.replace(/\D/g, '');
+        if (digitsOnly.length < 6 && digitsOnly.length > 0) {
+            totalScore += 20;
+            signals.push({ key: 'sigSpamPattern', score: 20, details: `Unusually short number (${digitsOnly.length} digits) — possible premium rate scam` });
+        }
+
+        /* 检查VIP/免费电话前缀(印度) */
+        if (/^(\+91|0)?(1[0-9]{2})/.test(cleaned)) {
+            /* 10xx 系列 - 需要验证 */
+            totalScore += 10;
+            signals.push({ key: 'sigSpamPattern', score: 10, details: 'Matches premium/short code pattern — verify legitimacy' });
+        }
+
+        return { signals, score: Math.min(totalScore, 100) };
+    }
+
+    /* 分析交易 */
+    analyzeTransaction(details) {
+        const signals = [];
+        let totalScore = 0;
+        const amount = parseFloat(details.amount) || 0;
+        const time = details.time || '14:30';
+        const method = details.method || 'upi';
+        const recipient = (details.recipient || '').toLowerCase();
+
+        /* 高金额 */
+        if (amount >= 50000) {
+            totalScore += 20;
+            signals.push({ key: 'sigHighAmount', score: 20, details: `High amount: ₹${amount.toLocaleString()}` });
+        } else if (amount >= 10000) {
+            totalScore += 10;
+            signals.push({ key: 'sigHighAmount', score: 10, details: `Moderate-high amount: ₹${amount.toLocaleString()}` });
+        }
+
+        /* 整数金额 */
+        if (amount > 0 && amount % 1000 === 0) {
+            totalScore += 10;
+            signals.push({ key: 'sigRoundAmount', score: 10, details: 'Round figure amount — typical of scam requests' });
+        }
+
+        /* 非常规时间 (22:00 - 06:00) */
+        const [hours] = time.split(':').map(Number);
+        if (hours >= 22 || hours < 6) {
+            totalScore += 20;
+            signals.push({ key: 'sigUnusualTime', score: 20, details: `Transaction at unusual hour: ${time}` });
+        }
+
+        /* 未知收款人 */
+        if (!recipient || recipient === 'unknown' || recipient === '' || recipient.length < 3) {
+            totalScore += 25;
+            signals.push({ key: 'sigUnknownRecipient', score: 25, details: 'Unknown or unverified recipient' });
+        }
+
+        /* 加密货币 */
+        if (method === 'crypto') {
+            totalScore += 25;
+            signals.push({ key: 'sigCryptoRisk', score: 25, details: 'Crypto transaction — irreversible, high risk' });
+        }
+
+        return { signals, score: Math.min(totalScore, 100) };
+    }
+
+    /* 获取威胁等级 */
+    getThreatLevel(score) {
+        if (score <= 15) return 'safe';
+        if (score <= 45) return 'suspicious';
+        return 'dangerous';
+    }
+}
+
+/* ============================================================
+   演示场景数据
+   ============================================================ */
+const DEMO_SCENARIOS = {
+    kyc: {
+        tab: 'message',
+        input: 'Dear Customer, your SBI account will be BLOCKED in 24 hours. Update your KYC immediately by clicking: http://sbi-kyc-update.xyz/verify. Call 1800-XXX-XXXX if not done by you. DO NOT IGNORE!!!'
+    },
+    lottery: {
+        tab: 'message',
+        input: 'CONGRATULATIONS!!! Your mobile number has WON Rs. 25,00,000 in the UK National Lottery! Call +44 703-123-4567 to claim your prize. Pay Rs. 5,000 as processing fee to UPI: winner@paytm. ACT NOW!!!'
+    },
+    otp: {
+        tab: 'message',
+        input: 'Your OTP for transaction of Rs. 49,999 is 847293. Do not share with anyone. If not done by you, call our helpline immediately at 9876543210 to block. Share your CVV to verify identity.'
+    },
+    phishing: {
+        tab: 'link',
+        input: 'https://paytm-secure-login.tk/account/verify?redirect=true&session=abc123'
+    },
+    scamCall: {
+        tab: 'call',
+        input: '+92 300 1234567'
+    },
+    safeMsg: {
+        tab: 'message',
+        input: 'Hi, the meeting tomorrow has been rescheduled to 3 PM instead of 11 AM. Please confirm if this works for you. Thanks!'
+    }
+};
+
+/* ============================================================
+   模拟威胁源数据
+   ============================================================ */
+const SIMULATED_THREATS = [
+    { type: 'danger', text: 'KYC scam surge detected in Maharashtra region — 340+ reports today', time: '2 min ago' },
+    { type: 'warning', text: 'New phishing domain registered: sbi-verify-login.xyz', time: '8 min ago' },
+    { type: 'danger', text: 'OTP scam ring operating from +92 prefix — 1200+ victims this week', time: '15 min ago' },
+    { type: 'warning', text: 'Fake PM relief fund UPI IDs circulating on WhatsApp', time: '22 min ago' },
+    { type: 'danger', text: 'Crypto investment fraud app "CryptoEarn Pro" flagged — ₹2.3Cr lost', time: '31 min ago' },
+    { type: 'warning', text: 'Suspicious bulk calls from +44 703 numbers targeting Delhi NCR', time: '45 min ago' },
+    { type: 'danger', text: 'Fake income tax refund portal detected: incometax-refund.tk', time: '1 hr ago' },
+    { type: 'warning', text: 'New lottery scam template using WhatsApp voice notes', time: '1.5 hr ago' },
+];
+
+/* ============================================================
+   UI控制器
+   ============================================================ */
+const UI = {
+    currentLang: 'en',
+    currentTab: 'message',
+    detector: new ScamDetector(),
+    scanHistory: [],
+    stats: { total: 0, threats: 0, warnings: 0, safe: 0 },
+
+    /* 初始化 */
+    init() {
+        /* 加载历史和统计 */
+        try {
+            const saved = localStorage.getItem('ssb_history');
+            if (saved) this.scanHistory = JSON.parse(saved);
+            const savedStats = localStorage.getItem('ssb_stats');
+            if (savedStats) this.stats = JSON.parse(savedStats);
+        } catch(e) { /* 忽略解析错误 */ }
+
+        /* 语言选择器 */
+        document.getElementById('langSelect').addEventListener('change', (e) => {
+            this.currentLang = e.target.value;
+            /* 如果有结果，重新显示翻译 */
+            if (document.getElementById('resultPanel').classList.contains('show')) {
+                const lastResult = this.scanHistory[0];
+                if (lastResult) this.displayVernacular(lastResult.level);
+            }
+        });
+
+        /* 渲染历史和统计 */
+        this.renderHistory();
+        this.renderStats();
+        this.renderThreatFeed();
+    },
+
+    /* 切换标签页 */
+    switchTab(tab) {
+        this.currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+        document.querySelectorAll('.scanner-panel').forEach(panel => {
+            panel.classList.toggle('active', panel.id === `panel-${tab}`);
+        });
+        /* 隐藏结果 */
+        document.getElementById('resultPanel').classList.remove('show');
+    },
+
+    /* 运行扫描 */
+    runScan(type) {
+        let input = '';
+        let result;
+
+        switch(type) {
+            case 'message':
+                input = document.getElementById('messageInput').value.trim();
+                if (!input) { this.showToast('Please enter a message to analyze', 'warning'); return; }
+                result = this.detector.analyzeMessage(input);
+                break;
+            case 'link':
+                input = document.getElementById('linkInput').value.trim();
+                if (!input) { this.showToast('Please enter a URL to check', 'warning'); return; }
+                result = this.detector.analyzeURL(input);
+                break;
+            case 'call':
+                input = document.getElementById('callInput').value.trim();
+                if (!input) { this.showToast('Please enter a phone number', 'warning'); return; }
+                result = this.detector.analyzePhone(input);
+                break;
+            case 'transaction':
+                const amount = document.getElementById('txnAmount').value;
+                const recipient = document.getElementById('txnRecipient').value;
+                const time = document.getElementById('txnTime').value;
+                const method = document.getElementById('txnMethod').value;
+                if (!amount) { this.showToast('Please enter the transaction amount', 'warning'); return; }
+                input = `₹${amount} to ${recipient} via ${method} at ${time}`;
+                result = this.detector.analyzeTransaction({ amount, recipient, time, method });
+                break;
+        }
+
+        const level = this.detector.getThreatLevel(result.score);
+        const scanResult = {
+            type, input, score: result.score, level, signals: result.signals,
+            timestamp: new Date().toISOString(), lang: this.currentLang
+        };
+
+        /* 显示扫描动画 */
+        this.showScanningAnimation(() => {
+            this.displayResult(scanResult);
+            this.addToHistory(scanResult);
+            this.updateStats(level);
+        });
+    },
+
+    /* 运行演示 */
+    runDemo(key) {
+        const scenario = DEMO_SCENARIOS[key];
+        if (!scenario) return;
+
+        this.switchTab(scenario.tab);
+
+        /* 填充输入 */
+        switch(scenario.tab) {
+            case 'message':
+                document.getElementById('messageInput').value = scenario.input;
+                break;
+            case 'link':
+                document.getElementById('linkInput').value = scenario.input;
+                break;
+            case 'call':
+                document.getElementById('callInput').value = scenario.input;
+                break;
+        }
+
+        /* 短暂延迟后自动运行扫描 */
+        setTimeout(() => this.runScan(scenario.tab), 400);
+    },
+
+    /* 扫描动画 */
+    showScanningAnimation(callback) {
+        const overlay = document.getElementById('scanningOverlay');
+        const scanText = document.getElementById('scanText');
+        const resultPanel = document.getElementById('resultPanel');
+        
+        resultPanel.classList.remove('show');
+        overlay.classList.add('active');
+
+        const messages = [
+            'ANALYZING PATTERNS...',
+            'CHECKING AGAINST 200+ SCAM INDICATORS...',
+            'EVALUATING THREAT LEVEL...',
+            'GENERATING VERNACULAR ALERT...'
+        ];
+        let i = 0;
+        const interval = setInterval(() => {
+            i++;
+            if (i < messages.length) {
+                scanText.textContent = messages[i];
+            }
+        }, 500);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            overlay.classList.remove('active');
+            callback();
+        }, 2000);
+    },
+
+    /* 显示结果 */
+    displayResult(result) {
+        const panel = document.getElementById('resultPanel');
+        const t = TRANSLATIONS[this.currentLang];
+        const level = result.level;
+
+        /* 标题和徽章 */
+        const title = document.getElementById('resultTitle');
+        const badge = document.getElementById('threatBadge');
+        
+        if (level === 'safe') {
+            title.textContent = 'Analysis Complete';
+            title.style.color = 'var(--accent)';
+            badge.textContent = 'SAFE';
+            badge.style.background = 'var(--accent-glow)';
+            badge.style.color = 'var(--accent)';
+            badge.style.border = '1px solid var(--accent)';
+        } else if (level === 'suspicious') {
+            title.textContent = 'Threat Detected';
+            title.style.color = 'var(--warning)';
+            badge.textContent = 'SUSPICIOUS';
+            badge.style.background = 'var(--warning-glow)';
+            badge.style.color = 'var(--warning)';
+            badge.style.border = '1px solid var(--warning)';
+        } else {
+            title.textContent = 'High Risk Detected';
+            title.style.color = 'var(--danger)';
+            badge.textContent = 'DANGEROUS';
+            badge.style.background = 'var(--danger-glow)';
+            badge.style.color = 'var(--danger)';
+            badge.style.border = '1px solid var(--danger)';
+        }
+
+        /* 威胁条 */
+        const barFill = document.getElementById('threatBarFill');
+        barFill.style.width = '0%';
+        if (level === 'safe') {
+            barFill.style.background = 'var(--accent)';
+        } else if (level === 'suspicious') {
+            barFill.style.background = 'var(--warning)';
+        } else {
+            barFill.style.background = 'var(--danger)';
+        }
+        setTimeout(() => { barFill.style.width = result.score + '%'; }, 100);
+
+        /* 统计数字 */
+        document.getElementById('scoreValue').textContent = result.score + '/100';
+        document.getElementById('scoreValue').style.color = 
+            level === 'safe' ? 'var(--accent)' : level === 'suspicious' ? 'var(--warning)' : 'var(--danger)';
+        document.getElementById('signalCount').textContent = result.signals.length;
+        document.getElementById('scanTime').textContent = Math.floor(Math.random() * 200 + 100) + 'ms';
+
+        /* 本地语言警报 */
+        this.displayVernacular(level);
+
+        /* 检测到的信号 */
+        const signalsContainer = document.getElementById('signalsContainer');
+        signalsContainer.innerHTML = '';
+        if (result.signals.length > 0) {
+            const signalsTitle = document.createElement('div');
+            signalsTitle.className = 'flex items-center gap-2 mb-2';
+            signalsTitle.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:var(--warning)"></i>
+                <span class="text-sm font-semibold" style="color:var(--fg-muted)">Detected Signals:</span>`;
+            signalsContainer.appendChild(signalsTitle);
+
+            result.signals.forEach(sig => {
+                const sigDiv = document.createElement('div');
+                sigDiv.className = 'flex items-start gap-3 p-3 rounded-lg';
+                sigDiv.style.background = 'var(--bg)';
+                sigDiv.style.border = '1px solid var(--border)';
+                const color = sig.score >= 20 ? 'var(--danger)' : 'var(--warning)';
+                sigDiv.innerHTML = `
+                    <i class="fa-solid fa-circle-exclamation mt-1" style="color:${color};font-size:12px"></i>
+                    <div>
+                        <div class="text-sm font-semibold" style="color:${color}">${t[sig.key] || sig.key}</div>
+                        <div class="text-xs mt-1" style="color:var(--fg-muted)">${sig.details}</div>
+                    </div>
+                    <span class="ml-auto text-xs font-bold px-2 py-1 rounded" style="background:${color === 'var(--danger)' ? 'var(--danger-glow)' : 'var(--warning-glow)'};color:${color}">+${sig.score}</span>
+                `;
+                signalsContainer.appendChild(sigDiv);
+            });
+        }
+
+        /* 建议操作 */
+        this.displayActions(level);
+
+        /* 卡片闪烁效果 */
+        const mainCard = document.getElementById('mainCard');
+        mainCard.classList.remove('danger-flash', 'safe-glow');
+        void mainCard.offsetWidth; /* 强制重排 */
+        if (level === 'dangerous') {
+            mainCard.classList.add('danger-flash');
+        } else if (level === 'safe') {
+            mainCard.classList.add('safe-glow');
+        }
+
+        panel.classList.add('show');
+
+        /* Toast通知 */
+        if (level === 'safe') {
+            this.showToast(t.safe, 'safe');
+        } else if (level === 'suspicious') {
+            this.showToast(t.suspicious, 'warning');
+        } else {
+            this.showToast(t.dangerous, 'danger');
+        }
+    },
+
+    /* 显示本地语言警报 */
+    displayVernacular(level) {
+        const t = TRANSLATIONS[this.currentLang];
+        const vernacularText = document.getElementById('vernacularText');
+        const alertBox = document.getElementById('vernacularAlert');
+
+        let text = '';
+        let borderColor = 'var(--accent)';
+        
+        if (level === 'safe') {
+            text = t.safe;
+            borderColor = 'var(--accent)';
+        } else if (level === 'suspicious') {
+            text = t.suspicious;
+            borderColor = 'var(--warning)';
+        } else {
+            text = t.dangerous;
+            borderColor = 'var(--danger)';
+        }
+
+        vernacularText.textContent = text;
+        alertBox.style.borderColor = borderColor;
+
+        /* 显示当前语言标签 */
+        const langNames = { en: 'English', hi: 'हिन्दी', mr: 'मराठी', ta: 'தமிழ்', bn: 'বাংলা', te: 'తెలుగు' };
+        const langLabel = alertBox.querySelector('.text-sm.font-semibold');
+        if (langLabel) {
+            langLabel.innerHTML = `<i class="fa-solid fa-language" style="color:${borderColor}"></i>
+                Alert in <strong>${langNames[this.currentLang]}</strong>:`;
+        }
+    },
+
+    /* 显示建议操作 */
+    displayActions(level) {
+        const t = TRANSLATIONS[this.currentLang];
+        const list = document.getElementById('actionsList');
+        list.innerHTML = '';
+
+        let actions = [];
+        if (level === 'safe') {
+            actions = ['actionIgnore'];
+        } else if (level === 'suspicious') {
+            actions = ['actionVerify', 'actionNoClick', 'actionScreenshot'];
+        } else {
+            actions = ['actionBlock', 'actionReport', 'actionNoClick', 'actionNoShare', 'actionCallBank', 'actionNoPay', 'actionScreenshot'];
+        }
+
+        actions.forEach(key => {
+            const li = document.createElement('li');
+            li.className = 'flex items-start gap-2 text-sm';
+            const iconColor = level === 'safe' ? 'var(--accent)' : level === 'suspicious' ? 'var(--warning)' : 'var(--danger)';
+            li.innerHTML = `<i class="fa-solid fa-circle-check mt-1" style="color:${iconColor};font-size:12px"></i>
+                <span style="color:var(--fg)">${t[key] || key}</span>`;
+            list.appendChild(li);
+        });
+    },
+
+    /* 添加到历史 */
+    addToHistory(result) {
+        this.scanHistory.unshift(result);
+        if (this.scanHistory.length > 50) this.scanHistory.pop();
+        try {
+            localStorage.setItem('ssb_history', JSON.stringify(this.scanHistory));
+        } catch(e) {}
+        this.renderHistory();
+    },
+
+    /* 渲染历史 */
+    renderHistory() {
+        const container = document.getElementById('historyContainer');
+        if (this.scanHistory.length === 0) {
+            container.innerHTML = `<div class="text-center py-8" style="color:var(--fg-muted)">
+                <i class="fa-solid fa-inbox text-3xl mb-2 block" style="opacity:0.3"></i>
+                No scans yet. Try analyzing a message or link above.
+            </div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        const typeIcons = {
+            message: 'fa-message', link: 'fa-link', call: 'fa-phone', transaction: 'fa-money-bill-transfer'
+        };
+        const typeLabels = {
+            message: 'Message', link: 'Link', call: 'Call', transaction: 'Transaction'
+        };
+
+        this.scanHistory.slice(0, 20).forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            const color = item.level === 'safe' ? 'var(--accent)' : item.level === 'suspicious' ? 'var(--warning)' : 'var(--danger)';
+            const bgColor = item.level === 'safe' ? 'var(--accent-glow)' : item.level === 'suspicious' ? 'var(--warning-glow)' : 'var(--danger-glow)';
+            const time = new Date(item.timestamp).toLocaleString();
+            const preview = item.input.length > 60 ? item.input.substring(0, 60) + '...' : item.input;
+
+            div.innerHTML = `
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background:${bgColor}">
+                    <i class="fa-solid ${typeIcons[item.type]}" style="color:${color};font-size:14px"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs font-bold px-2 py-0.5 rounded" style="background:${bgColor};color:${color}">${item.level.toUpperCase()}</span>
+                        <span class="text-xs" style="color:var(--fg-muted)">${typeLabels[item.type]}</span>
+                    </div>
+                    <p class="text-sm truncate" style="color:var(--fg)">${preview}</p>
+                    <p class="text-xs mt-1" style="color:var(--fg-muted)">${time} · Score: ${item.score}/100</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <div class="font-display font-bold text-xl" style="color:${color}">${item.score}</div>
+                    <div class="text-xs" style="color:var(--fg-muted)">/100</div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    },
+
+    /* 更新统计 */
+    updateStats(level) {
+        this.stats.total++;
+        if (level === 'dangerous') this.stats.threats++;
+        else if (level === 'suspicious') this.stats.warnings++;
+        else this.stats.safe++;
+        try {
+            localStorage.setItem('ssb_stats', JSON.stringify(this.stats));
+        } catch(e) {}
+        this.renderStats();
+    },
+
+    /* 渲染统计 */
+    renderStats() {
+        document.getElementById('statScans').textContent = this.stats.total;
+        document.getElementById('statThreats').textContent = this.stats.threats;
+        document.getElementById('statWarnings').textContent = this.stats.warnings;
+        document.getElementById('statSafe').textContent = this.stats.safe;
+    },
+
+    /* 渲染模拟威胁源 */
+    renderThreatFeed() {
+        const container = document.getElementById('threatFeed');
+        container.innerHTML = '';
+        SIMULATED_THREATS.forEach(threat => {
+            const div = document.createElement('div');
+            div.className = `feed-item ${threat.type}`;
+            div.innerHTML = `
+                <div class="flex items-start gap-2">
+                    <i class="fa-solid ${threat.type === 'danger' ? 'fa-circle-xmark' : 'fa-triangle-exclamation'} mt-0.5" 
+                       style="color:${threat.type === 'danger' ? 'var(--danger)' : 'var(--warning)'};font-size:12px"></i>
+                    <div>
+                        <p class="text-sm" style="color:var(--fg)">${threat.text}</p>
+                        <p class="text-xs mt-1" style="color:var(--fg-muted)">${threat.time}</p>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    },
+
+    /* 清除历史 */
+    clearHistory() {
+        this.scanHistory = [];
+        this.stats = { total: 0, threats: 0, warnings: 0, safe: 0 };
+        try {
+            localStorage.removeItem('ssb_history');
+            localStorage.removeItem('ssb_stats');
+        } catch(e) {}
+        this.renderHistory();
+        this.renderStats();
+        document.getElementById('resultPanel').classList.remove('show');
+        this.showToast('History and stats cleared', 'safe');
+    },
+
+    /* Toast通知 */
+    showToast(message, type) {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        const icons = { safe: 'fa-circle-check', warning: 'fa-triangle-exclamation', danger: 'fa-circle-xmark' };
+        toast.innerHTML = `<i class="fa-solid ${icons[type]}"></i><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => { if (toast.parentNode) toast.removef(); }, 4000);
+    }
+};
+
+/* ============================================================
+   初始化应用
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => UI.init());
+</script>
+</body>
+</html>
